@@ -3,7 +3,7 @@ import numpy as np
 import os.path
 import os
 
-def create_label_list(path_slices_0, path_slices_1):
+def create_label_list(path_slices_0, path_slices_1, cat):
     '''
     This function creates the labels for both classes.
     '''
@@ -18,10 +18,10 @@ def create_label_list(path_slices_0, path_slices_1):
 
     label_list = label_list_0 + label_list_1
 
-    with open(f'labels/labels.txt', 'w') as filehandle:
+    with open(f'labels/labels_{cat}.txt', 'w') as filehandle:
         filehandle.writelines("%s\n" % place for place in label_list)
 
-def create_data(path_slices_0, path_slices_1):
+def create_data(path_slices_0, path_slices_1, cat):
     '''
     This function creates a spectrogram of each slice and saves the result as a numpy array in data.txt.
     '''
@@ -48,11 +48,11 @@ def create_data(path_slices_0, path_slices_1):
     array = np.array(data_list)
 
     # save the array to a txt file
-    file = open("data/data.txt", "w")
+    file = open(f"data/data_{cat}.txt", "w")
     for row in array:
         np.savetxt(file, row)
 
-def shape(path_slices):
+def shape(path_slices, cat):
     '''
     This function prints the current shape of the data array and the distribution of 1's and 0's.
     It also shows the class distribution.
@@ -72,26 +72,27 @@ def shape(path_slices):
             break
 
     # loads and prints the shape of the data array
-    data = np.loadtxt(f"data/data.txt")
+    data = np.loadtxt(f"data/data_{cat}.txt")
     data = data.reshape(-1, height, width)
     print(f"The shape of your data is {data.shape}.")
 
 
 
-def create_data_and_labels(path_slices_0, path_slices_1):
+def create_data_and_labels(cat):
     '''
     This function puts all the steps together for creating both the data and the labels.
     '''
+
+    path_slices_0 = f"audio_files/class_0/{cat}/seconds_1_overlap_0/"
+    path_slices_1 = f"audio_files/class_1/{cat}/seconds_1_overlap_0/"
+
     # creates labels
-    create_label_list(path_slices_0, path_slices_1)
+    create_label_list(path_slices_0, path_slices_1, cat)
 
     # creates data
-    create_data(path_slices_0, path_slices_1)
+    create_data(path_slices_0, path_slices_1, cat)
 
     # printing the shape of the data
-    shape(path_slices_0)
+    shape(path_slices_0, cat)
 
-path_slices_0 = "audio_files/class_0/seconds_1_overlap_0/"
-path_slices_1 = "audio_files/class_1/seconds_1_overlap_0/"
-
-#create_data_and_labels(path_slices_0, path_slices_1)
+create_data_and_labels("Train")

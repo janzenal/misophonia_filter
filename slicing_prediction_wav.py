@@ -40,23 +40,26 @@ def create_data(name, number, seconds, overlap):
     # collect all the slices in a list
     data_list = []
 
-    # convert each slice into a mel spectrogram and append it to a list
     for slice in os.listdir(path_slices):
         if "mp3" in slice:
-            audio, sr = librosa.load(path_slices + slice)
-            spectrogram = librosa.feature.melspectrogram(y=audio, sr=sr)
-            spectrogram_db = librosa.amplitude_to_db(spectrogram, ref=np.max)
-            data_list.append(spectrogram_db)
+                wav_path = slice.replace("mp3", "wav")
+
+            # convert wav to mp3
+                sound = AudioSegment.from_mp3(path_slices + slice)
+                sound = sound.set_frame_rate(16000)
+                sound.export(path_slices + "wav_compressed/" + wav_path, format="wav")
+                wav_file, sr = librosa.load(path_slices + "wav_compressed/" + wav_path)
+                data_list.append(wav_file)
 
     # convert the list to a numpy array
     array = np.array(data_list)
 
     # save the array to a txt file
-    if os.path.isdir(f"data/for_prediction/{name}") == False:
+    if os.path.isdir(f"data_wav_compressed/for_prediction/{name}") == False:
         os.mkdir(f"data/for_prediction/{name}")
-    if os.path.isdir(f"data/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}") == False:
-        os.mkdir(f"data/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}")
-    if os.path.isdir(f"data/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}/{name}_{number}") == False:
+    if os.path.isdir(f"data_wav_compressed/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}") == False:
+        os.mkdir(f"data_wav_compressed/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}")
+    if os.path.isdir(f"data_wav_compressed/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}/{name}_{number}") == False:
         os.mkdir(f"data/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}/{name}_{number}")
     file = open(f"data/for_prediction/{name}/seconds_{seconds}_overlap_{overlap}/{name}_{number}/data.txt", "w")
     for row in array:
@@ -65,6 +68,3 @@ def create_data(name, number, seconds, overlap):
 slicing_audio("Recording", 1, 0.2, 0)
 
 create_data("Recording", 1, 0.2, 0)
-
-
-

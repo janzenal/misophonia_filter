@@ -49,4 +49,4 @@ def perform(seconds, overlap):
     for i in range(1, 4):
         parameters("ASMR_val", i, seconds, overlap, 1, "Validation")
 
-perform(1.5, 0.5)
+perform(0.2, 0)
